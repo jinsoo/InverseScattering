@@ -18,7 +18,7 @@ lamb = 74.9*um
 k = 2*np.pi / lamb
 
 eps = np.zeros((250,250))
-str1 = Sphere(shape = (250,250,250), center = (125,125,125), R = lamb*3/dx, eps=5, mu=1)
+str1 = Sphere(shape = (250,250,250), center = (125,125,125), R = lamb*3/dx, eps=10, mu=1)
 eps = str1.epsr[:,:,125]
 plt.imshow(eps)
 plt.show()
@@ -45,16 +45,16 @@ H = 1/4 * hankel1(0, k*r_g)
 H = np.nan_to_num(H)
 
 Omega = eps[125-47:125+47, 125-47:125+47].copy()
-Omega = Omega.flatten()
 plt.imshow(Omega)
 plt.show()
+Omega = Omega.flatten()
 f = k**2 * np.diag((Omega)**2 -1)
 A = np.eye(len(f)) - np.matmul(G, f)
 
-u_in = np.exp(1J * k*(np.sqrt((X_g+(1000/4.8-125)*dx)**2+(Y_g-125*dx)**2))).reshape(250,250)[125-47:125+47,125-47:125+47].flatten()
-plt.imshow(np.real(u_in))
-plt.show()
+u_in = np.exp(1J * k*(np.sqrt((X_g-(1000/4.8+125)*dx)**2+(Y_g-125*dx)**2))).reshape(250,250)[125-47:125+47,125-47:125+47].flatten()
 # u_in = np.ones((250,250)).reshape(250,250)[125-47:125+47,125-47:125+47].flatten()
+plt.imshow(np.real(u_in.reshape(94,94)))
+plt.show()
 
 delta = 5*10e-7*np.linalg.norm(u_in)
 u_prev = u_in
@@ -62,12 +62,13 @@ u_prevprev = u_in
 t_prev = 0
 iter = 1
 
+print("iteration starts")
 while iter < 120:
     t = (1 + np.sqrt(1+4*t_prev**2))/2
     mu = (1 - t_prev) / t
     s = (1 - mu)*u_prev + mu*u_prevprev
     g = np.matmul(np.conj(A), (np.matmul(A,s) - u_in))
-    gamma = ((np.linalg.norm(g) / np.linalg.norm(np.matmul(A,g)))).item()**2
+    gamma = ((np.linalg.norm(g) / np.linalg.norm(np.matmul(A,g))))**2
     if iter % 20 == 0:
         print("now : {}, step : {}".format(gamma * np.linalg.norm(g),iter))
     if gamma * np.linalg.norm(g) < delta:
@@ -81,7 +82,4 @@ while iter < 120:
 u_p = np.matmul(H, k**2*u*(Omega**2-1))
 u_p = u_p.reshape(250,250)
 u_p[125-47:125+47, 125-47:125+47] =np.matmul(G, k**2*u*(Omega**2-1)).reshape(94,94)
-
-np.max(u_p)
-
 plt.imshow(np.abs(u_p), cmap='jet')
