@@ -18,7 +18,7 @@ lamb = 74.9*um
 k = 2*np.pi / lamb
 
 eps = np.zeros((250,250))
-str1 = Sphere(shape = (250,250,250), center = (125,125,125), R = lamb*3/dx, eps=1.2, mu=1)
+str1 = Sphere(shape = (250,250,250), center = (125,125,125), R = lamb*3/dx, eps=15, mu=1)
 eps = str1.epsr[:,:,125]
 plt.imshow(eps)
 plt.show()
@@ -73,13 +73,13 @@ while iter < 120:
         print("now : {}, step : {}".format(gamma * np.linalg.norm(g),iter))
     if gamma * np.linalg.norm(g) < delta:
         break
-    u = s - gamma * g
+    u = s - gamma * g 
     u_prev = u
     u_prevprev = u_prev
     t_prev = t
     iter += 1
 
-u_p = np.matmul(H, k**2*u*(Omega**2-1))
+u_p = np.matmul(H, u*(Omega**2-1))
 u_p = u_p.reshape(250,250)
 u_p[125-47:125+47, 125-47:125+47] =np.matmul(G, k**2*u*(Omega**2-1)).reshape(94,94)
 plt.imshow(np.abs(u_p), cmap='jet')
