@@ -18,7 +18,7 @@ lamb = 74.9*um
 k = 2*np.pi / lamb
 
 eps = np.zeros((250,250))
-str1 = Sphere(shape = (250,250,250), center = (125,125,125), R = lamb*3/dx, eps=10, mu=1)
+str1 = Sphere(shape = (250,250,250), center = (125,125,125), R = lamb*3/dx, eps=1.2, mu=1)
 eps = str1.epsr[:,:,125]
 plt.imshow(eps)
 plt.show()
